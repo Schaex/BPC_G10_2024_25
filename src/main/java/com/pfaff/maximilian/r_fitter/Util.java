@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public final class Util {
+    // TODO: update method annotation!
     /**
      * Reads all lines of a file. Each line is split into, preferably, {@code columns} parts.
      * While splitting lines, the respective cells are distributed into their cells, resulting in a transposed data set.
@@ -50,7 +51,7 @@ public final class Util {
             builder.append(array1[i])
                     .append(EQUAL_DELIMITER, 0, EQUAL_DELIMITER.length)
                     .append(array2[i])
-                    .append(COMMA_DELIMITER,0, COMMA_DELIMITER.length);
+                    .append(COMMA_DELIMITER, 0, COMMA_DELIMITER.length);
         }
 
         builder.append(array1[maxI])
@@ -60,13 +61,29 @@ public final class Util {
         return builder.toString();
     }
 
+    private static final String[] PADDING_PRE_CACHE;
+
     /**
      * @param str String that requires padding.
      * @param targetLength Sum of the input string's and the padding's lengths.
-     * @return A string where the space character is repeated so that (str + padding).length() == targetLength.
+     * @return A string where the space character is repeated so that: <pre>{@code (str + padding).length() == targetLength}</pre>
      */
     public static String createPadding(String str, int targetLength) {
-        return " ".repeat(targetLength - str.length());
+        final int requiredLength = targetLength - str.length();
+
+        if (requiredLength < PADDING_PRE_CACHE.length) {
+            return PADDING_PRE_CACHE[requiredLength];
+        }
+
+        return " ".repeat(requiredLength);
+    }
+
+    static {
+        PADDING_PRE_CACHE = new String[32];
+
+        for (int i = 0; i < PADDING_PRE_CACHE.length; i++) {
+            PADDING_PRE_CACHE[i] = " ".repeat(i);
+        }
     }
 
     private Util() {}
