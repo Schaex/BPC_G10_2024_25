@@ -93,16 +93,19 @@ public class RFit {
      * @param coefficientStartVals Initial values of the fitting coefficients. Choosing suitable values is crucial!
      * @return Fitting result.
      */
-    public static RFit ofNLS(String[] xVals, String[] yVals, String functionToFit, String[] coefficientNames, String[] coefficientStartVals) {
+    public static RFit ofNonLinear(String[] xVals, String[] yVals, String functionToFit, String[] coefficientNames, String[] coefficientStartVals) {
         try (RFitter fit = RFitter.create()) {
             final RCode code = fit.getRCode();
             final StringBuilder builder = code.getCode();
+
+            // Required because it's an external package
+            code.addRCode("library(minpack.lm)");
 
             RCodeUtils.addArray(builder, "x", xVals, false, false);
             RCodeUtils.addArray(builder, "y", yVals, false, false);
 
             final String functionCall = String.join("",
-                    "model <- nls(y ~ ", functionToFit,
+                    "model <- nlsLM(y ~ ", functionToFit,
                     ", start=list(", Util.pairString(coefficientNames, coefficientStartVals), "))");
 
             code.addRCode(functionCall);

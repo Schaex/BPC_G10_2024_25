@@ -1,23 +1,19 @@
 package com.pfaff.maximilian.r_fitter;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public final class Util {
-    // TODO: update method annotation!
     /**
      * Reads all lines of a file. Each line is split into, preferably, {@code columns} parts.
      * While splitting lines, the respective cells are distributed into their cells, resulting in a transposed data set.
-     * @param file File to read.
-     * @param columns Expected number of columns.
-     * @return Transposed data set.
+     * @param in InputStream to read from.
+     * @param columns Number of columns inside the table.
+     * @return A table.
      */
-    public static String[][] readTSVTransposed(File file, int columns) throws IOException {
+    public static String[][] readTSVTransposed(InputStream in, int columns) throws IOException {
         final String[] lines;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             lines = reader.lines().toArray(String[]::new);
         }
 
@@ -61,7 +57,7 @@ public final class Util {
         return builder.toString();
     }
 
-    private static final String[] PADDING_PRE_CACHE;
+    private static final String[] PREALLOCATED_PADDING;
 
     /**
      * @param str String that requires padding.
@@ -71,18 +67,18 @@ public final class Util {
     public static String createPadding(String str, int targetLength) {
         final int requiredLength = targetLength - str.length();
 
-        if (requiredLength < PADDING_PRE_CACHE.length) {
-            return PADDING_PRE_CACHE[requiredLength];
+        if (requiredLength < PREALLOCATED_PADDING.length) {
+            return PREALLOCATED_PADDING[requiredLength];
         }
 
         return " ".repeat(requiredLength);
     }
 
     static {
-        PADDING_PRE_CACHE = new String[32];
+        PREALLOCATED_PADDING = new String[32];
 
-        for (int i = 0; i < PADDING_PRE_CACHE.length; i++) {
-            PADDING_PRE_CACHE[i] = " ".repeat(i);
+        for (int i = 0; i < PREALLOCATED_PADDING.length; i++) {
+            PREALLOCATED_PADDING[i] = " ".repeat(i);
         }
     }
 
